@@ -1,0 +1,20 @@
+name = "AgnosticStorageDynamics"
+uuid = "32e03c9e-1ca1-4f94-998d-0c16334532c1"
+authors = ["Kevin R. Moore <kevmoor@sandia.gov> and contributors"]
+version = "0.1.0"
+
+[deps]
+
+[compat]
+FiniteDiff = "2"
+ForwardDiff = "0.10, 1"
+julia = "1.9"
+
+[extras]
+FiniteDiff = "6a86dc24-6348-571c-b903-95158fe2bd41"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test", "ForwardDiff", "FiniteDiff", "Random"]
