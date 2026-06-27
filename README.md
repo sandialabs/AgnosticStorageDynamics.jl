@@ -1,7 +1,7 @@
 # AgnosticStorageDynamics.jl
 
-[![CI](https://github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl/actions/workflows/CI.yml)
-[![Docs](https://github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml/badge.svg)](https://github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml)
+[![CI](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/CI.yml)
+[![Docs](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml/badge.svg?branch=master)](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml)
 
 `AgnosticStorageDynamics.jl` is a differentiable, type-stable Julia package for
 technology-agnostic storage dynamics simulation with:
@@ -18,7 +18,7 @@ Inputs and outputs are powers in watts. Internal state is energy in joules
 
 ```julia
 using Pkg
-Pkg.add(url = "https://github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl")
+Pkg.add(url = "https://github.com/sandialabs/AgnosticStorageDynamics.jl")
 ```
 
 ## Quick Usage
