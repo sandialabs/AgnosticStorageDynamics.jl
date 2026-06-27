@@ -1,7 +1,10 @@
 # AgnosticStorageDynamics.jl
 
-[![CI](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/CI.yml)
-[![Docs](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml/badge.svg?branch=master)](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml)
+[![Tests](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/CI.yml)
+[![Docs](https://github.com/sandialabs/AgnosticStorageDynamics.jl/actions/workflows/Docs.yml/badge.svg?branch=master)](https://sandialabs.github.io/AgnosticStorageDynamics.jl/dev/)
+[![Coverage](https://codecov.io/gh/sandialabs/AgnosticStorageDynamics.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sandialabs/AgnosticStorageDynamics.jl)
+
+Documentation is hosted at [sandialabs.github.io/AgnosticStorageDynamics.jl/dev/](https://sandialabs.github.io/AgnosticStorageDynamics.jl/dev/).
 
 `AgnosticStorageDynamics.jl` is a differentiable, type-stable Julia package for
 technology-agnostic storage dynamics simulation with:
