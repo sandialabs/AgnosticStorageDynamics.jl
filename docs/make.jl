@@ -25,8 +25,8 @@ makedocs(
     remotes = nothing,
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", "false") == "true",
-        edit_link = "main",
-        repolink = "https://github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl",
+        edit_link = "master",
+        repolink = "https://github.com/sandialabs/AgnosticStorageDynamics.jl",
     ),
     pages = [
         "Home" => "index.md",
@@ -43,6 +43,7 @@ makedocs(
 
 if get(ENV, "CI", "false") == "true"
     deploydocs(
-        repo = "github.com/JuliaOceanWaves/AgnosticStorageDynamics.jl.git",
+        repo = "github.com/sandialabs/AgnosticStorageDynamics.jl.git",
+        devbranch = "master",
     )
 end
