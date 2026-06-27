@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Dynamic Profile · AgnosticStorageDynamics.jl</title><meta name="title" content="Dynamic Profile · AgnosticStorageDynamics.jl"/><meta property="og:title" content="Dynamic Profile · AgnosticStorageDynamics.jl"/><meta property="twitter:title" content="Dynamic Profile · AgnosticStorageDynamics.jl"/><meta name="description" content="Documentation for AgnosticStorageDynamics.jl."/><meta property="og:description" content="Documentation for AgnosticStorageDynamics.jl."/><meta property="twitter:description" content="Documentation for AgnosticStorageDynamics.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">AgnosticStorageDynamics.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../quickstart/">Quickstart</a></li><li><a class="tocitem" href="../../usage/">Usage</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../../examples/">Overview</a></li><li class="is-active"><a class="tocitem" href>Dynamic Profile</a></li></ul></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Dynamic Profile</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Dynamic Profile</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/sandialabs/AgnosticStorageDynamics.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Dynamic-Profile-With-Rate-Limit-Windows"><a class="docs-heading-anchor" href="#Dynamic-Profile-With-Rate-Limit-Windows">Dynamic Profile With Rate-Limit Windows</a><a id="Dynamic-Profile-With-Rate-Limit-Windows-1"></a><a class="docs-heading-anchor-permalink" href="#Dynamic-Profile-With-Rate-Limit-Windows" title="Permalink"></a></h1><p>This scenario mirrors the integration test and exercises:</p><ol><li>fill to capacity and spill</li><li>idle standing losses</li><li>pull-down to empty with unmet demand</li><li>random dynamic input/output</li><li>appended charge/discharge windows below and above configured rate limits</li><li>optional annotated plotting of each period</li></ol><pre><code class="language-julia hljs">using AgnosticStorageDynamics
+using Random
+
+Random.seed!(7)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Random.TaskLocalRNG()</code></pre><p>Define scenario windows.</p><pre><code class="language-julia hljs">fill_steps = 6
+idle_steps = 5
+pull_steps = 5
+random_steps = 30
+prep_empty_steps = 10
+charge_within_steps = 2
+charge_exceed_steps = 2
+prep_discharge_steps = 4
+discharge_within_steps = 2
+discharge_exceed_steps = 2</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2</code></pre><p>Build contiguous index ranges so plots and checks can be window-aware.</p><pre><code class="language-julia hljs">cursor = 1
+fill_range = cursor:(cursor + fill_steps - 1)
+cursor += fill_steps
+idle_range = cursor:(cursor + idle_steps - 1)
+cursor += idle_steps
+pull_range = cursor:(cursor + pull_steps - 1)
+cursor += pull_steps
+random_range = cursor:(cursor + random_steps - 1)
+cursor += random_steps
+prep_empty_range = cursor:(cursor + prep_empty_steps - 1)
+cursor += prep_empty_steps
+charge_within_range = cursor:(cursor + charge_within_steps - 1)
+cursor += charge_within_steps
+charge_exceed_range = cursor:(cursor + charge_exceed_steps - 1)
+cursor += charge_exceed_steps
+prep_discharge_range = cursor:(cursor + prep_discharge_steps - 1)
+cursor += prep_discharge_steps
+discharge_within_range = cursor:(cursor + discharge_within_steps - 1)
+cursor += discharge_within_steps
+discharge_exceed_range = cursor:(cursor + discharge_exceed_steps - 1)
+cursor += discharge_exceed_steps
+total_steps = cursor - 1</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">68</code></pre><p>Build input and demand power profiles in watts.</p><pre><code class="language-julia hljs">power_in = vcat(
+    fill(250.0, fill_steps),
+    zeros(idle_steps),
+    zeros(pull_steps),
+    150.0 .* rand(random_steps),
+    zeros(prep_empty_steps),
+    fill(80.0, charge_within_steps),
+    fill(160.0, charge_exceed_steps),
+    fill(250.0, prep_discharge_steps),
+    zeros(discharge_within_steps),
+    zeros(discharge_exceed_steps),
+)
+
+power_out_demand = vcat(
+    zeros(fill_steps),
+    zeros(idle_steps),
+    fill(240.0, pull_steps),
+    120.0 .* rand(random_steps),
+    fill(240.0, prep_empty_steps),
+    zeros(charge_within_steps),
+    zeros(charge_exceed_steps),
+    zeros(prep_discharge_steps),
+    fill(90.0, discharge_within_steps),
+    fill(200.0, discharge_exceed_steps),
+)
+
+params = StorageParams(
+    energy_capacity = 500.0,
+    charge_rate_max = 100.0,
+    discharge_rate_max = 120.0,
+    charge_efficiency = 0.95,
+    discharge_efficiency = 0.9,
+    standing_loss_rate = 0.03,
+)
+
+dt = 1.0
+result = simulate_storage(power_in, power_out_demand, params; dt = dt, initial_energy = 0.0)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">StorageResult{Float64}([0.0, 92.19232568710828, 181.6599563776119, 268.4834189783786, 352.74086046650854, 434.508118226889, 485.22276677425407, 470.8822667921243, 456.96559263561403, 443.4602183585787  …  233.22520032012451, 318.5246796487292, 401.30317837718695, 481.6352027420696, 485.22276677425407, 485.22276677425407, 370.8822667921243, 259.92103928076324, 118.90587831196967, 0.0], [100.0, 100.0, 100.0, 100.0, 100.0, 68.93882291906422, 0.0, 0.0, 0.0, 0.0  …  100.0, 100.0, 100.0, 100.0, 19.331365534663554, 15.554982342890455, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 90.0, 120.0, 103.85251066846206], [150.0, 150.0, 150.0, 150.0, 150.0, 181.06117708093578, 0.0, 0.0, 0.0, 0.0  …  60.0, 60.0, 150.0, 150.0, 230.66863446533645, 234.44501765710953, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 80.0, 96.14748933153794], [5.0, 5.0, 5.0, 5.0, 5.0, 3.446941145953218, 0.0, 0.0, 0.0, 0.0  …  5.0, 5.0, 5.0, 5.0, 0.9665682767331774, 0.7777491171445234, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 13.333333333333343, 11.539167852051335], [2.80767431289172, 5.532369309496374, 8.176537399233325, 10.742558511870072, 13.23274223961954, 14.777233225745931, 14.340499982129757, 13.916674156510283, 13.505374277035344, 13.106230146049882  …  7.102764781965021, 9.700520671395282, 12.221501271542252, 14.66797563511733, 14.777233225745931, 14.777233225745931, 14.340499982129757, 10.961227511361074, 7.681827635460223, 3.514199791456278])</code></pre><p>Physical estimate profiles for options: 1 battery, 2 thermal storage, 3 desalinated water storage, 4 h2 storage.</p><pre><code class="language-julia hljs">physical_profiles = Dict(
+    1 =&gt; estimate_physical_profile(
+        result;
+        option = 1,
+        baseline_mass = 2_000.0,
+        baseline_volume = 2.5,
+    ),
+    2 =&gt; estimate_physical_profile(
+        result;
+        option = 2,
+        baseline_mass = 4_500.0,
+        baseline_volume = 6.0,
+    ),
+    3 =&gt; estimate_physical_profile(
+        result;
+        option = 3,
+        baseline_mass = 8_000.0,
+        baseline_volume = 12.0,
+    ),
+    4 =&gt; estimate_physical_profile(
+        result;
+        option = 4,
+        baseline_mass = 1_000.0,
+        baseline_volume = 4.0,
+    ),
+)
+desal_profile = physical_profiles[3]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">StoragePhysicalResult{Float64}(3, :desalinated_water_storage, 12600.0, 1.26e7, 8000.0, 12.0, [0.0, 0.007316851245008593, 0.014417456855366025, 0.021308207855426874, 0.027995306386230837, 0.03448477128784833, 0.03850974339478207, 0.03737160847556542, 0.03626711052663603, 0.035195255425284025  …  0.018509936533343214, 0.025279736480057872, 0.031849458601364046, 0.03822501609064045, 0.03850974339478207, 0.03850974339478207, 0.029435100539057485, 0.020628653911171687, 0.009436974469203942, 0.0], [0.0, 7.316851245008593e-6, 1.4417456855366024e-5, 2.1308207855426874e-5, 2.7995306386230835e-5, 3.448477128784833e-5, 3.8509743394782066e-5, 3.7371608475565423e-5, 3.626711052663603e-5, 3.519525542528402e-5  …  1.8509936533343215e-5, 2.5279736480057874e-5, 3.1849458601364044e-5, 3.8225016090640445e-5, 3.8509743394782066e-5, 3.8509743394782066e-5, 2.9435100539057486e-5, 2.0628653911171684e-5, 9.436974469203942e-6, 0.0], [8000.0, 8000.007316851245, 8000.014417456855, 8000.021308207855, 8000.027995306386, 8000.034484771288, 8000.038509743395, 8000.037371608476, 8000.036267110527, 8000.035195255426  …  8000.0185099365335, 8000.02527973648, 8000.031849458602, 8000.038225016091, 8000.038509743395, 8000.038509743395, 8000.029435100539, 8000.020628653911, 8000.009436974469, 8000.0], [12.0, 12.000007316851246, 12.000014417456855, 12.000021308207856, 12.000027995306386, 12.000034484771287, 12.000038509743394, 12.000037371608476, 12.000036267110527, 12.000035195255425  …  12.000018509936533, 12.00002527973648, 12.000031849458601, 12.000038225016091, 12.000038509743394, 12.000038509743394, 12.000029435100538, 12.00002062865391, 12.00000943697447, 12.0])</code></pre><p>Basic checks.</p><pre><code class="language-julia hljs">@assert total_steps == length(power_in) == length(power_out_demand)
+@assert maximum(result.spill_power[fill_range]) &gt; 0.0
+@assert all(result.standing_loss_energy[idle_range] .&gt; 0.0)
+@assert sum(result.unmet_demand_power[pull_range]) &gt; 0.0
+@assert all(result.charge_power .&lt;= params.charge_rate_max .+ 1e-10)
+@assert all(result.discharge_power .&lt;= params.discharge_rate_max .+ 1e-10)
+@assert all(power_in[charge_exceed_range] .&gt; params.charge_rate_max)
+@assert all(power_out_demand[discharge_exceed_range] .&gt; params.discharge_rate_max)
+@assert desal_profile.system_mass[1] == desal_profile.baseline_mass
+@assert maximum(desal_profile.system_mass) &gt; desal_profile.system_mass[1]</code></pre><p>Rate-limit windows.</p><pre><code class="language-julia hljs">@assert all(isapprox.(result.charge_power[charge_within_range], power_in[charge_within_range]; atol = 1e-10))
+@assert all(isapprox.(result.charge_power[charge_exceed_range], params.charge_rate_max; atol = 1e-10))
+@assert all(isapprox.(result.discharge_power[discharge_within_range], power_out_demand[discharge_within_range]; atol = 1e-10))
+@assert any(isapprox.(result.discharge_power[discharge_exceed_range], params.discharge_rate_max; atol = 1e-10))
+
+(
+    total_spill_J = total_spill_energy(result, dt),
+    total_unmet_J = total_unmet_energy(result, dt),
+    total_losses_J = total_losses_energy(result),
+    final_system_mass_by_option_kg = Dict(k =&gt; v.system_mass[end] for (k, v) in physical_profiles),
+    final_system_volume_by_option_m3 = Dict(k =&gt; v.system_volume[end] for (k, v) in physical_profiles),
+    desalinated_water_mass_range_kg = extrema(desal_profile.system_mass),
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(total_spill_J = 2064.907131120597, total_unmet_J = 3520.9270207259206, total_losses_J = 832.0853777930331, final_system_mass_by_option_kg = Dict(4 =&gt; 1000.0, 2 =&gt; 4500.0, 3 =&gt; 8000.0, 1 =&gt; 2000.0), final_system_volume_by_option_m3 = Dict(4 =&gt; 4.0, 2 =&gt; 6.0, 3 =&gt; 12.0, 1 =&gt; 2.5), desalinated_water_mass_range_kg = (8000.0, 8000.038509743395))</code></pre><p>The computed trajectories can be plotted interactively after adding <code>Plots</code> to the active environment:</p><pre><code class="language-julia hljs">using Plots
+
+t = 0:length(power_in)
+p = plot(
+    t,
+    result.energy;
+    label = &quot;Stored energy (J)&quot;,
+    xlabel = &quot;step&quot;,
+    ylabel = &quot;value&quot;,
+    legend = (0.5, 0.5),
+)
+plot!(p, 1:length(power_in), result.charge_power; label = &quot;charge power (W)&quot;)
+plot!(p, 1:length(power_in), result.discharge_power; label = &quot;discharge power (W)&quot;)
+ymax = maximum(result.energy)
+window_specs = [
+    (fill_range, &quot;fill/spill&quot;, :lightskyblue),
+    (idle_range, &quot;idle-loss&quot;, :lightgreen),
+    (pull_range, &quot;pull-down&quot;, :mistyrose),
+    (random_range, &quot;random&quot;, :lightgray),
+    (prep_empty_range, &quot;drain-prep&quot;, :wheat),
+    (charge_within_range, &quot;charge&lt;=rate&quot;, :honeydew),
+    (charge_exceed_range, &quot;charge&gt;rate&quot;, :khaki),
+    (prep_discharge_range, &quot;refill-prep&quot;, :wheat),
+    (discharge_within_range, &quot;discharge&lt;=rate&quot;, :lavender),
+    (discharge_exceed_range, &quot;discharge&gt;rate&quot;, :thistle),
+]
+for (range, label, color) in window_specs
+    vspan!(p, [first(range) - 0.5, last(range) + 0.5]; color = color, alpha = 0.08, label = &quot;&quot;)
+    midpoint = (first(range) + last(range)) / 2
+    annotate!(p, midpoint, ymax * 1.08, text(label, 7, :black, rotation = 30))
+end
+ylims!(p, 0, ymax * 1.2)
+display(p)</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../examples/">« Overview</a><a class="docs-footer-nextpage" href="../../theory/">Theory »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Saturday 27 June 2026 15:27">Saturday 27 June 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
